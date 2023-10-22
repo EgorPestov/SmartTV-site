@@ -1,6 +1,8 @@
 import { useRef, useState } from 'react';
 
 import Video from '../../assets/videos/Volvo Trucks - The Epic Split feat. Van Damme (Live Test).webm';
+import { useAppSelector } from '../../hooks/use-app-selector/use-app-selector';
+import { getVideoShowStatus } from '../../store/banner-process/selectors';
 
 export const VideoPlayer = () => {
     const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -17,8 +19,10 @@ export const VideoPlayer = () => {
     }
   };
 
+  const isVideoShowing = useAppSelector(getVideoShowStatus);
+
   return (
-    <div>
+    <div className={isVideoShowing ? '' : 'visually-hidden'}>
       <video
         ref={videoRef}
         className="background-video"
