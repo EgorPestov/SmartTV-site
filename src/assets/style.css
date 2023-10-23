@@ -6,6 +6,7 @@ body {
     height: 720px;
     background-color: #000;
     overflow: hidden;
+    font-family: 'Roboto', sans-serif;
 }
 
 .background-video {
@@ -16,9 +17,14 @@ body {
 }
 
 @keyframes fadeIn {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-  }
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
 
 .banner {
     position: absolute;
@@ -31,7 +37,6 @@ body {
 }
 
 .banner-text {
-    font-family: 'Roboto', sans-serif;
     font-weight: 600;
     font-size: 16px;
     line-height: 18.75px;
@@ -48,7 +53,6 @@ body {
     background-color: black;
     border: none;
     cursor: pointer;
-    font-family: 'Roboto', sans-serif;
     font-weight: 600;
     font-size: 16px;
     line-height: 18.75px;
@@ -61,16 +65,98 @@ body {
 
 .background-image {
     width: 100%;
+    height: 100%;
     position: absolute;
     top: 0;
     left: 0;
 }
 
 .close-button {
-    z-index: 2;
     position: absolute;
     top: 20px;
     right: 20px;
     width: 88px;
     height: 52px;
+    z-index: 2;
+}
+
+.input-form-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 380px;
+    height: 100%;
+    background-color: #86D3F4;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    
+ 
+}
+
+.fieldset-wrapper {
+    border: none;
+    text-align: center;
+    padding: 40px 24px;
+    
+}
+
+.input-form-heading {
+    width: 272px;
+    height: 60px;
+    font-weight: 400;
+    font-size: 26px;
+    line-height: 30.47px;
+    text-align: center;
+}
+
+.input-form-number {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    width: 239px;
+    height: 38px;
+    font-weight: 700;
+    font-size: 32px;
+    line-height: 37.5px;
+    text-align: center;
+    margin-top: 13px;
+    letter-spacing: -1px;
+}
+
+.input-form-top-text {
+    width: 328px;
+    height: 32px;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 16.41px;
+}
+
+.buttons-container {
+    width: 284px;
+    height: 278px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px 0px;
+    gap: 10px;
+    margin: auto;
+}
+
+.buttons-row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.button-usual {
+    width: 88px;
+    height: 52px;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 18.75px;
+    background-color: #86D3F4;
+}
+
+.button-double {
+    width: 186px;
 }
