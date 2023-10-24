@@ -13,17 +13,20 @@ export const InputForm: React.FC = () => {
         if (inputRef.current) {
             inputRef.current.focus();
         }
+        console.log(numberString)
     }, []);
 
     const handleNumberChange = (evt: ChangeEvent<HTMLInputElement>) => {
         setNumberString(evt.target.value);
+        console.log(numberString)
     };
 
     const handleNumberClick = (digit: string, evt: MouseEvent<HTMLButtonElement>) => {
         evt.preventDefault();
-        if (numberString.length >= 10 && numberString !== '') {
+        if (numberString.length >= 10)  {
             return;
         }
+
         setNumberString((prevNumber) => {
             console.log(prevNumber)
             let result = prevNumber;
@@ -38,13 +41,12 @@ export const InputForm: React.FC = () => {
     const handleDeleteClick = (evt: MouseEvent<HTMLButtonElement>) => {
         evt.preventDefault();
         setNumberString((prevNumber) => {
-            if (prevNumber === '') {
+            if (prevNumber === '+7(___)___-__-__' || numberString.length <= 0) {
                 return;
             }
             const updatedNumber = prevNumber.slice(0, -1);
             return updatedNumber || '';
         });
-        console.log(numberString);
     };
 
     const moveCursorToEnd = () => {
@@ -67,7 +69,6 @@ export const InputForm: React.FC = () => {
             input.setSelectionRange(cursorPosition, cursorPosition);
         }
     };
-    console.log(numberString);
 
     return (
         <>
