@@ -1,52 +1,17 @@
 import { CloseButton } from "../close-button/close-button";
 import { useAppDispatch } from "../../hooks/use-app-dispatch/use-app-dispatch";
 import { setFormStatus, setVideoStatus } from "../../store/banner-process/banner-process";
-import { useState, ChangeEvent, MouseEvent, useRef, useEffect } from 'react';
+import { useState, ChangeEvent, MouseEvent, useRef } from 'react';
 import InputMask from 'react-input-mask';
 
 export const InputForm: React.FC = () => {
     const dispatch = useAppDispatch();
     const inputRef = useRef<HTMLInputElement | null>(null);
-    const [numberString, setNumberString] = useState<string>('');
-
-    useEffect(() => {
-        if (inputRef.current) {
-            inputRef.current.focus();
-        }
-        console.log(numberString)
-    }, []);
+    const [numberString, setNumberString] = useState<string>('+7(___)___-__-__');
 
     const handleNumberChange = (evt: ChangeEvent<HTMLInputElement>) => {
         setNumberString(evt.target.value);
         console.log(numberString)
-    };
-
-    const handleNumberClick = (digit: string, evt: MouseEvent<HTMLButtonElement>) => {
-        evt.preventDefault();
-        if (numberString.length >= 10)  {
-            return;
-        }
-
-        setNumberString((prevNumber) => {
-            console.log(prevNumber)
-            let result = prevNumber;
-            if (prevNumber === '') {
-                result = ''
-            }
-            return result + digit;
-        });
-        console.log(numberString);
-    };
-
-    const handleDeleteClick = (evt: MouseEvent<HTMLButtonElement>) => {
-        evt.preventDefault();
-        setNumberString((prevNumber) => {
-            if (prevNumber === '+7(___)___-__-__' || numberString.length <= 0) {
-                return;
-            }
-            const updatedNumber = prevNumber.slice(0, -1);
-            return updatedNumber || '';
-        });
     };
 
     const moveCursorToEnd = () => {
@@ -68,6 +33,33 @@ export const InputForm: React.FC = () => {
 
             input.setSelectionRange(cursorPosition, cursorPosition);
         }
+    };
+
+    const handleNumberClick = (digit: string, evt: MouseEvent<HTMLButtonElement>) => {
+        evt.preventDefault();
+        console.log(numberString)
+
+        const indexOfUnderscore = numberString.indexOf('_');
+    
+        if (indexOfUnderscore !== -1) {
+            const updatedNumberString =
+                numberString.substring(0, indexOfUnderscore) + digit + numberString.substring(indexOfUnderscore + 1);
+
+            setNumberString(updatedNumberString);
+        }
+    };
+
+    const handleDeleteClick = (evt: MouseEvent<HTMLButtonElement>) => {
+        evt.preventDefault();
+        setNumberString((prevNumber) => {
+            if (prevNumber === '+7(___)___-__-__' || numberString.length <= 0) {
+                return;
+            }
+            const updatedNumber = prevNumber.slice(0, -1);
+            console.log(numberString)
+            return updatedNumber || '';
+            
+        });
     };
 
     return (
