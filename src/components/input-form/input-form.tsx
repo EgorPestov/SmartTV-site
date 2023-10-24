@@ -73,6 +73,25 @@ export const InputForm = () => {
         }, 0);
     };
 
+    const handleDocumentKeyDown = (evt: globalThis.KeyboardEvent) => {
+        const isNumberKey = evt.key >= '0' && evt.key <= '9';
+        const isBackspaceKey = evt.key === 'Backspace';
+
+        if (isNumberKey || isBackspaceKey) {
+            if (inputRef.current) {
+                inputRef.current.focus();
+            }
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener('keydown', handleDocumentKeyDown);
+
+        return () => {
+            document.removeEventListener('keydown', handleDocumentKeyDown);
+        };
+    }, [numberString]);
+
     const handleDeleteClick = (evt: MouseEvent<HTMLButtonElement>) => {
         evt.preventDefault();
         const currentFocusedElement = document.activeElement;
@@ -83,7 +102,7 @@ export const InputForm = () => {
                 return;
             }
             const updatedNumberString = numberString.substring(0, lastDigitIndex) + '_' + numberString.substring(lastDigitIndex + 1);
-            
+
             console.log(updatedNumberString)
             setNumberString(updatedNumberString);
         }
@@ -183,6 +202,10 @@ export const InputForm = () => {
                             <button className={`button-usual button-double ${focusedIndex === 10 ? 'focused' : ''}`} onClick={handleDeleteClick}>Стереть</button>
                             <button className={`button-usual ${focusedIndex === 11 ? 'focused' : ''}`} type="button" onClick={(e) => handleNumberClick('0', e)}>0</button>
                         </div>
+                    </div>
+                    <div className="agreement-wrapper">
+                        <input type="checkbox" id="agreement-checkbox" className="agreement-checkbox" />
+                        <label htmlFor="agreement-checkbox" className="agreement-label">Согласие на обработку персональных данных</label>
                     </div>
                 </fieldset>
             </form>
