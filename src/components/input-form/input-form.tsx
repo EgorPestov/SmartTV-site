@@ -4,14 +4,17 @@ import { setFormStatus, setVideoStatus } from "../../store/banner-process/banner
 import { useState, ChangeEvent, MouseEvent, useRef } from 'react';
 import InputMask from 'react-input-mask';
 
-export const InputForm: React.FC = () => {
+
+export const InputForm = () => {
     const dispatch = useAppDispatch();
     const inputRef = useRef<HTMLInputElement | null>(null);
-    const [numberString, setNumberString] = useState<string>('+7(___)___-__-__');
+    const [numberString, setNumberString] = useState('+7(___)___-__-__');
 
     const handleNumberChange = (evt: ChangeEvent<HTMLInputElement>) => {
         setNumberString(evt.target.value);
-        console.log(numberString)
+        if (evt.target.value === '') {
+            setNumberString('+7(___)___-__-__')
+        }
     };
 
     const moveCursorToEnd = () => {
@@ -35,36 +38,47 @@ export const InputForm: React.FC = () => {
         }
     };
 
+    const handleOutOfMaskClick = () => {
+        if (inputRef.current) {
+            inputRef.current.focus();
+        }
+    };
+
     const handleNumberClick = (digit: string, evt: MouseEvent<HTMLButtonElement>) => {
         evt.preventDefault();
-        console.log(numberString)
+        if (inputRef.current) {
+            inputRef.current.focus();
+        }
+        const firstUnderscore = numberString.indexOf('_');
+        const lastUnderscore = numberString.lastIndexOf('_');
 
-        const indexOfUnderscore = numberString.indexOf('_');
-    
-        if (indexOfUnderscore !== -1) {
-            const updatedNumberString =
-                numberString.substring(0, indexOfUnderscore) + digit + numberString.substring(indexOfUnderscore + 1);
-
+        if (firstUnderscore !== -1 && lastUnderscore !== -1) {
+            const updatedNumberString = numberString.slice(0, firstUnderscore) + digit + numberString.slice(firstUnderscore + 1);
             setNumberString(updatedNumberString);
         }
+        setTimeout(() => {
+            moveCursorToEnd();
+        }, 0);
     };
 
     const handleDeleteClick = (evt: MouseEvent<HTMLButtonElement>) => {
         evt.preventDefault();
-        setNumberString((prevNumber) => {
-            if (prevNumber === '+7(___)___-__-__' || numberString.length <= 0) {
-                return;
-            }
-            const updatedNumber = prevNumber.slice(0, -1);
-            console.log(numberString)
-            return updatedNumber || '';
-            
-        });
+        if (numberString === '+7(___)___-__-__'){
+            return;
+        }
+        const lastDigitIndex = numberString.search(/\d(?![\d\D]*\d)/);
+        if (lastDigitIndex >= 0) {
+            const updatedNumberString = numberString.substring(0, lastDigitIndex) + '_' + numberString.substring(lastDigitIndex + 1);
+            setNumberString(updatedNumberString);
+        }
+        setTimeout(() => {
+            moveCursorToEnd();
+        }, 0);
     };
 
     return (
         <>
-            <form className="input-form-wrapper">
+            <form className="input-form-wrapper" onClick={handleOutOfMaskClick}>
                 <fieldset className='fieldset-wrapper'>
                     <label className="input-form-heading">Введите ваш номер мобильного телефона</label>
                     <InputMask
