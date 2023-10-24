@@ -161,3 +161,8 @@ body {
 .button-double {
     width: 186px;
 }
+
+.focused {
+    background-color: black;
+    color: #86D3F4;
+}
