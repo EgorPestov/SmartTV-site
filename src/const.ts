@@ -12,9 +12,9 @@ export const BUTTON_FOCUS_TIME = 500;
 
 export const IDDLE_TIME = 10000;
 
-export const API_KEY = '9116eda8f49972854ca0446d31481566';
+export const API_KEY = 'd5b8e5676fe146e7b4c664efd2cd09f6';
 
-export const API_URL = 'http://apilayer.net/api/validate';
+export const API_URL = 'https://phonevalidation.abstractapi.com/v1/';
 
 export const NameSpace = {
   Banner: 'BANNER',
