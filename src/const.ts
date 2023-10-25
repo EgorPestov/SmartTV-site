@@ -6,6 +6,8 @@ export const BANNER_CLOSE_DELAY_TIME = BANNER_OPEN_DELAY_TIME + 10000;
 
 export const ERROR_SHOW_TIME = 1000;
 
+export const NUMBER_MASK = '+7(___)___-__-__';
+
 export const NameSpace = {
   Banner: 'BANNER',
 } as const;

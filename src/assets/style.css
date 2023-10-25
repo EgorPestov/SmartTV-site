@@ -10,14 +10,16 @@ html, body {
     position: relative;
 }
 
-/* button:focus {
+button:focus {
     outline: none;
-} */
+}
 
 .background-video {
     position: absolute;
     top: 0;
     left: 0;
+    width: 1280px;
+    height: 720px;
 }
 
 @keyframes fadeIn {
@@ -68,7 +70,8 @@ html, body {
 }
 
 .background-image {
-    height: 724px;
+    width: 1280px;
+    height: 723px;
     position: relative;
     top: 0;
     left: 0;
@@ -93,6 +96,7 @@ html, body {
     background-color: #86D3F4;
     z-index: 2;
     display: flex;
+    align-items: center;
     justify-content: center;
 }
 
@@ -260,4 +264,25 @@ html, body {
 .close-focused {
     filter: invert(1);
     outline: none;
+}
+
+.success-wrapper {
+    width: 284px;
+    height: 123px;
+}
+
+.success-header {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    font-weight: 700;
+    font-size: 32px;
+    line-height: 37.5px;
+}
+
+.success-text {
+    text-align: center;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 16.41px;
 }

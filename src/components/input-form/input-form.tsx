@@ -4,7 +4,7 @@ import { setFormStatus, setVideoStatus } from "../../store/banner-process/banner
 import { useState, ChangeEvent, MouseEvent, KeyboardEvent, useRef, useEffect } from 'react';
 import InputMask from 'react-input-mask';
 import { useKeyPress } from "../../assets/hooks/use-key-press/use-key-press";
-import { ERROR_SHOW_TIME } from "../../const";
+import { ERROR_SHOW_TIME, NUMBER_MASK } from "../../const";
 
 export const InputForm = () => {
     const dispatch = useAppDispatch();
@@ -13,7 +13,8 @@ export const InputForm = () => {
     const closeButtonRef = useRef<HTMLDivElement | null>(null);
     const submitRef = useRef<HTMLButtonElement | null>(null);
 
-    const [numberString, setNumberString] = useState('+7(___)___-__-__');
+    const [isFormShowing, setFormShowing] = useState(true);
+    const [numberString, setNumberString] = useState(NUMBER_MASK);
     const [focusedIndex, setFocusedIndex] = useState(0);
     const [showError, setShowError] = useState(false);
     const [isAgreementChecked, setAgreementChecked] = useState(false);
@@ -27,7 +28,7 @@ export const InputForm = () => {
     const handleNumberChange = (evt: ChangeEvent<HTMLInputElement>) => {
         setNumberString(evt.target.value);
         if (evt.target.value === '') {
-            setNumberString('+7(___)___-__-__');
+            setNumberString(NUMBER_MASK);
         }
 
         const digitCount = (evt.target.value.match(/\d/g) || []).length;
@@ -242,7 +243,7 @@ export const InputForm = () => {
             closeButtonRef.current.focus();
         } else if (focusedIndex === 14 && submitRef.current) {
             submitRef.current.focus();
-        } 
+        }
     }, [focusedIndex]);
 
     const handleAgreementChange = (evt: ChangeEvent<HTMLInputElement>) => {
@@ -257,10 +258,18 @@ export const InputForm = () => {
             setShowError(true);
             setTimeout(() => setShowError(false), ERROR_SHOW_TIME);
         } else {
-            // здесь переход на 3 экран
             setShowError(false);
+            setFormShowing(false);
+
+            // здесь переход на 3 экран
         }
     };
+
+    useEffect(() => {
+        if (!isFormShowing && closeButtonRef.current) {
+            closeButtonRef.current.focus();
+        }
+    }, [isFormShowing]);
 
     const handleCheckboxEnterPress = (evt: KeyboardEvent<HTMLLabelElement>) => {
         evt.preventDefault();
@@ -280,8 +289,10 @@ export const InputForm = () => {
                 setShowError(true);
                 setTimeout(() => setShowError(false), ERROR_SHOW_TIME);
             } else {
-                // здесь переход на 3 экран
                 setShowError(false);
+                setFormShowing(false);
+
+                // здесь переход на 3 экран
             }
         }
     };
@@ -298,7 +309,7 @@ export const InputForm = () => {
         <>
             <div className="container">
                 <form className="input-form-wrapper" onClick={handleOutOfMaskClick}>
-                    <fieldset className='fieldset-wrapper'>
+                    {isFormShowing ? <fieldset className='fieldset-wrapper'>
                         <label className="input-form-heading">Введите ваш номер мобильного телефона</label>
                         <InputMask
                             mask="+7(999)999-99-99"
@@ -371,9 +382,16 @@ export const InputForm = () => {
                             ПОДТВЕРДИТЬ НОМЕР
                         </button>
                     </fieldset>
+                        :
+                        <div className="success-wrapper">
+                            <h1 className="success-header">ЗАЯВКА ПРИНЯТА</h1>
+                            <p className="success-text">Держите телефон под рукой. <br /> Скоро с Вами свяжется наш менеджер.</p>
+                        </div>
+                    }
+
                 </form>
                 <div
-                    className={`close-button ${focusedIndex === 15 ? 'close-focused' : ''}`}
+                    className={`close-button ${focusedIndex === 15 || !isFormShowing ? 'close-focused' : ''}`}
                     onClick={() => {
                         dispatch(setFormStatus(false));
                         dispatch(setVideoStatus(true));
