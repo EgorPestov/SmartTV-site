@@ -5,16 +5,14 @@ export type ProductsProcessType = {
     isVideoShowing: boolean;
     isBannerShowing: boolean;
     isFormShowing: boolean;
-    isSuccessShowing: boolean;
-
+    wasFormShown: boolean;
 }
 
 export const initialState: ProductsProcessType = {
     isVideoShowing: true,
     isBannerShowing: false,
     isFormShowing: false,
-    isSuccessShowing: false,
-
+    wasFormShown: false,
 };
 
 export const bannerProcessSlice = createSlice({
@@ -30,10 +28,10 @@ export const bannerProcessSlice = createSlice({
         setFormStatus: (state, action: PayloadAction<boolean>) => {
             state.isFormShowing = action.payload;
         },
-        setSuccessStatus: (state, action: PayloadAction<boolean>) => {
-            state.isSuccessShowing = action.payload;
+        setFormShownStatus: (state, action: PayloadAction<boolean>) => {
+            state.wasFormShown = action.payload;
         },
     },
 });
 
-export const { setBannerStatus, setFormStatus, setSuccessStatus, setVideoStatus } = bannerProcessSlice.actions;
+export const { setBannerStatus, setFormStatus, setVideoStatus, setFormShownStatus } = bannerProcessSlice.actions;

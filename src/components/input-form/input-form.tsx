@@ -1,10 +1,10 @@
 import { CloseButton } from "../close-button/close-button";
 import { useAppDispatch } from "../../hooks/use-app-dispatch/use-app-dispatch";
-import { setFormStatus, setVideoStatus } from "../../store/banner-process/banner-process";
+import { setFormStatus, setVideoStatus, setFormShownStatus } from "../../store/banner-process/banner-process";
 import { useState, ChangeEvent, MouseEvent, KeyboardEvent, useRef, useEffect } from 'react';
 import InputMask from 'react-input-mask';
 import { useKeyPress } from "../../assets/hooks/use-key-press/use-key-press";
-import { ERROR_SHOW_TIME, IDDLE_TIME, NUMBER_MASK } from "../../const";
+import { BUTTON_FOCUS_TIME, ERROR_SHOW_TIME, IDDLE_TIME, NUMBER_MASK } from "../../const";
 
 export const InputForm = () => {
     const dispatch = useAppDispatch();
@@ -16,15 +16,40 @@ export const InputForm = () => {
     const [timerValue, setTimerValue] = useState<number | null>(null);
     const timerRef = useRef<number | null>(null);
 
+    const [isFormShowing, setFormShowing] = useState(true);
+    const [numberString, setNumberString] = useState(NUMBER_MASK);
+    const [focusedIndex, setFocusedIndex] = useState(0);
+    const [showError, setShowError] = useState(false);
+    const [isAgreementChecked, setAgreementChecked] = useState(false);
+    const [isSubmitDisabled, setSubmitDisabled] = useState(true);
+
+    const arrowUpPressed = useKeyPress('ArrowUp');
+    const arrowDownPressed = useKeyPress('ArrowDown');
+    const arrowLeftPressed = useKeyPress('ArrowLeft');
+    const arrowRightPressed = useKeyPress('ArrowRight');
+
     useEffect(() => {
         const initialTimer = setTimeout(() => {
             setTimerValue(10);
-        }, IDDLE_TIME);
+        }, 0);
 
         return () => {
             clearTimeout(initialTimer);
         };
     }, []);
+
+    useEffect(() => {
+        if (!isFormShowing) {
+            const initialTimer = setTimeout(() => {
+                setTimerValue(10);
+            }, 0);
+
+
+            return () => {
+                clearTimeout(initialTimer);
+            };
+        }
+    }, [isFormShowing]);
 
     useEffect(() => {
         const handleUserActivity = () => {
@@ -58,20 +83,9 @@ export const InputForm = () => {
         } else if (timerValue === 0) {
             dispatch(setFormStatus(false));
             dispatch(setVideoStatus(true));
+            dispatch(setFormShownStatus(true));
         }
     }, [timerValue, dispatch]);
-
-    const [isFormShowing, setFormShowing] = useState(true);
-    const [numberString, setNumberString] = useState(NUMBER_MASK);
-    const [focusedIndex, setFocusedIndex] = useState(0);
-    const [showError, setShowError] = useState(false);
-    const [isAgreementChecked, setAgreementChecked] = useState(false);
-    const [isSubmitDisabled, setSubmitDisabled] = useState(true);
-
-    const arrowUpPressed = useKeyPress('ArrowUp');
-    const arrowDownPressed = useKeyPress('ArrowDown');
-    const arrowLeftPressed = useKeyPress('ArrowLeft');
-    const arrowRightPressed = useKeyPress('ArrowRight');
 
     const handleNumberChange = (evt: ChangeEvent<HTMLInputElement>) => {
         setNumberString(evt.target.value);
@@ -136,7 +150,7 @@ export const InputForm = () => {
 
         setTimeout(() => {
             currentButton.classList.remove('focused');
-        }, 1000);
+        }, BUTTON_FOCUS_TIME);
     };
 
     const handleNumberClick = (digit: string, evt: MouseEvent<HTMLButtonElement>) => {
@@ -308,8 +322,6 @@ export const InputForm = () => {
         } else {
             setShowError(false);
             setFormShowing(false);
-
-            // здесь переход на 3 экран
         }
     };
 
@@ -339,8 +351,6 @@ export const InputForm = () => {
             } else {
                 setShowError(false);
                 setFormShowing(false);
-
-                // здесь переход на 3 экран
             }
         }
     };
@@ -350,6 +360,7 @@ export const InputForm = () => {
         if (evt.key === 'Enter') {
             dispatch(setFormStatus(false));
             dispatch(setVideoStatus(true));
+            dispatch(setFormShownStatus(true));
         }
     };
 
@@ -443,6 +454,7 @@ export const InputForm = () => {
                     onClick={() => {
                         dispatch(setFormStatus(false));
                         dispatch(setVideoStatus(true));
+                        dispatch(setFormShownStatus(true));
                     }}
                     onKeyDown={handleCloseButtonEnterPress}
                     tabIndex={0}
