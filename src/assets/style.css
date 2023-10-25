@@ -1,4 +1,4 @@
-body {
+html, body {
     margin: 0;
     display: flex;
     place-items: center;
@@ -7,10 +7,14 @@ body {
     background-color: #000;
     overflow: hidden;
     font-family: 'Roboto', sans-serif;
+    position: relative;
+}
+
+button:focus {
+    outline: none;
 }
 
 .background-video {
-    width: 100%;
     position: absolute;
     top: 0;
     left: 0;
@@ -64,9 +68,8 @@ body {
 }
 
 .background-image {
-    width: 100%;
-    height: 100%;
-    position: absolute;
+    height: 724px;
+    position: relative;
     top: 0;
     left: 0;
 }
@@ -85,20 +88,17 @@ body {
     top: 0;
     left: 0;
     width: 380px;
-    height: 100%;
+    height:720px;
     background-color: #86D3F4;
     z-index: 2;
     display: flex;
     justify-content: center;
-    
- 
 }
 
 .fieldset-wrapper {
     border: none;
     text-align: center;
     padding: 40px 24px;
-    
 }
 
 .input-form-heading {
@@ -120,9 +120,7 @@ body {
     font-size: 32px;
     line-height: 37.5px;
     text-align: center;
-    margin-top: 13px;
-    
-    
+    margin-top: 13px;  
 }
 
 .input-form-top-text {
@@ -135,12 +133,11 @@ body {
 
 .buttons-container {
     width: 284px;
-    height: 278px;
+    height: 238px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     padding: 20px 0px;
-    gap: 10px;
     margin: auto;
 }
 
@@ -152,17 +149,98 @@ body {
 .button-usual {
     width: 88px;
     height: 52px;
-    font-weight: 500;
+    font-weight: 600;
     font-size: 16px;
     line-height: 18.75px;
     background-color: #86D3F4;
+    border: 2px solid black;
 }
 
 .button-double {
     width: 186px;
+    border: 2px solid black;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 18.75px;
 }
 
 .focused {
     background-color: black;
     color: white;
 }
+
+.agreement-wrapper {
+    width: 284px;
+    height: 52px;
+    margin: 0 auto;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+}
+
+.agreement-checkbox {
+    display: none;
+}
+
+.agreement-checkbox:checked + .agreement-label {
+    background-image: url('../assets/check.png');
+    background-size: 24px 16px; 
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.agreement-label {
+    display: inline-block;
+    margin-left: 10px;
+    min-width: 40px;
+    min-height: 40px;
+    border: 2px solid black;
+    background-color: #86D3F4;
+    position: relative;
+    cursor: pointer;
+    margin-right: 20px;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.agreement-text {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 16.41px;
+    color: #565656;
+    text-align: left;
+}
+
+.error-wrapper {
+    width: 284px;
+    height: 52px;
+    margin: 0 auto;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: red;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 18.75px;
+}
+
+.submit-button {
+    width: 284px;
+    height: 52px;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 18.75px;
+    background-color: #86D3F4;
+    border: 2px solid black;
+    margin-top: 10px;
+    color: black;
+}
+
+.submit-button:disabled {
+    background-color: #86D3F4;
+    border: 1px solid #4E4E4E;
+    color: #4E4E4E;
+    font-weight: 500;
+}
+

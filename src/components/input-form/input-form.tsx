@@ -4,24 +4,34 @@ import { setFormStatus, setVideoStatus } from "../../store/banner-process/banner
 import { useState, ChangeEvent, MouseEvent, KeyboardEvent, useRef, useEffect } from 'react';
 import InputMask from 'react-input-mask';
 import { useKeyPress } from "../../assets/hooks/use-key-press/use-key-press";
+import { ERROR_SHOW_TIME } from "../../const";
 
 export const InputForm = () => {
     const dispatch = useAppDispatch();
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [numberString, setNumberString] = useState('+7(___)___-__-__');
     const [focusedIndex, setFocusedIndex] = useState(0);
+    const [showError, setShowError] = useState(false);
+    const [isAgreementChecked, setAgreementChecked] = useState(false);
+    const [isSubmitDisabled, setSubmitDisabled] = useState(false);
 
     const arrowUpPressed = useKeyPress('ArrowUp');
     const arrowDownPressed = useKeyPress('ArrowDown');
     const arrowLeftPressed = useKeyPress('ArrowLeft');
     const arrowRightPressed = useKeyPress('ArrowRight');
 
-
-
     const handleNumberChange = (evt: ChangeEvent<HTMLInputElement>) => {
         setNumberString(evt.target.value);
         if (evt.target.value === '') {
             setNumberString('+7(___)___-__-__');
+        }
+
+        const digitCount = (evt.target.value.match(/\d/g) || []).length;
+
+        if (digitCount !== 11) {
+            setSubmitDisabled(true);
+        } else {
+            setSubmitDisabled(false);
         }
     };
 
@@ -155,69 +165,105 @@ export const InputForm = () => {
             setFocusedIndex((prevIndex) => (prevIndex + 1) % maxIndex);
         }
 
-        const focusedElement = document.querySelector('.focused'); // Находим элемент с классом "focused"
+        const focusedElement = document.querySelector('.focused');
         if (focusedElement) {
-            (focusedElement as HTMLElement).focus(); // Устанавливаем фокус на найденном элементе
+            (focusedElement as HTMLElement).focus();
         }
     }, [arrowUpPressed, arrowDownPressed, arrowLeftPressed, arrowRightPressed]);
 
+    const handleAgreementChange = (evt: ChangeEvent<HTMLInputElement>) => {
+        setAgreementChecked(evt.target.checked);
+    }
+
+    const handleSubmitClick = (evt: MouseEvent<HTMLButtonElement>) => {
+        evt.preventDefault();
+        console.log(numberString.length)
+        const digitCount = (numberString.match(/\d/g) || []).length;
+
+        if (digitCount !== 11) {
+            setShowError(true);
+            setTimeout(() => setShowError(false), ERROR_SHOW_TIME);
+        } else {
+            // здесь переход на 3 экран
+            setShowError(false);
+        }
+    };
+
     return (
         <>
-            <form className="input-form-wrapper" onClick={handleOutOfMaskClick}>
-                <fieldset className='fieldset-wrapper'>
-                    <label className="input-form-heading">Введите ваш номер мобильного телефона</label>
-                    <InputMask
-                        mask="+7(999)999-99-99"
-                        maskChar="_"
-                        value={numberString}
-                        onChange={handleNumberChange}
-                        onKeyDown={handleInputKeyDown}
-                        alwaysShowMask={true}
-                    >
-                        {() => <input
-                            type="text"
-                            className="input-form-number"
-                            ref={inputRef}
-                            onClick={() => moveCursorToEnd()}
-                        />}
-                    </InputMask>
-                    <p className='input-form-top-text'>и с Вами свяжется наш менеджер для дальнейшей консультации</p>
-                    <div className="buttons-container">
-                        <div className="buttons-row">
-                            <button className={`button-usual ${focusedIndex === 1 ? 'focused' : ''}`} type="button" onClick={(e) => handleNumberClick('1', e)}>1</button>
-                            <button className={`button-usual ${focusedIndex === 2 ? 'focused' : ''}`} type="button" onClick={(e) => handleNumberClick('2', e)}>2</button>
-                            <button className={`button-usual ${focusedIndex === 3 ? 'focused' : ''}`} type="button" onClick={(e) => handleNumberClick('3', e)}>3</button>
+            <div className="container">
+                <form className="input-form-wrapper" onClick={handleOutOfMaskClick}>
+                    <fieldset className='fieldset-wrapper'>
+                        <label className="input-form-heading">Введите ваш номер мобильного телефона</label>
+                        <InputMask
+                            mask="+7(999)999-99-99"
+                            maskChar="_"
+                            value={numberString}
+                            onChange={handleNumberChange}
+                            onKeyDown={handleInputKeyDown}
+                            alwaysShowMask={true}
+                        >
+                            {() => <input
+                                type="text"
+                                className="input-form-number"
+                                ref={inputRef}
+                                onClick={() => moveCursorToEnd()}
+                                style={{ color: showError ? 'red' : 'inherit' }}
+                            />}
+                        </InputMask>
+                        <p className='input-form-top-text'>и с Вами свяжется наш менеджер для дальнейшей консультации</p>
+                        <div className="buttons-container">
+                            <div className="buttons-row">
+                                <button className={`button-usual ${focusedIndex === 1 ? 'focused' : ''}`} type="button" onClick={(e) => handleNumberClick('1', e)}>1</button>
+                                <button className={`button-usual ${focusedIndex === 2 ? 'focused' : ''}`} type="button" onClick={(e) => handleNumberClick('2', e)}>2</button>
+                                <button className={`button-usual ${focusedIndex === 3 ? 'focused' : ''}`} type="button" onClick={(e) => handleNumberClick('3', e)}>3</button>
+                            </div>
+                            <div className="buttons-row">
+                                <button className={`button-usual ${focusedIndex === 4 ? 'focused' : ''}`} type="button" onClick={(e) => handleNumberClick('4', e)}>4</button>
+                                <button className={`button-usual ${focusedIndex === 5 ? 'focused' : ''}`} type="button" onClick={(e) => handleNumberClick('5', e)}>5</button>
+                                <button className={`button-usual ${focusedIndex === 6 ? 'focused' : ''}`} type="button" onClick={(e) => handleNumberClick('6', e)}>6</button>
+                            </div>
+                            <div className="buttons-row">
+                                <button className={`button-usual ${focusedIndex === 7 ? 'focused' : ''}`} type="button" onClick={(e) => handleNumberClick('7', e)}>7</button>
+                                <button className={`button-usual ${focusedIndex === 8 ? 'focused' : ''}`} type="button" onClick={(e) => handleNumberClick('8', e)}>8</button>
+                                <button className={`button-usual ${focusedIndex === 9 ? 'focused' : ''}`} type="button" onClick={(e) => handleNumberClick('9', e)}>9</button>
+                            </div>
+                            <div className="buttons-row">
+                                <button className={`button-usual button-double ${focusedIndex === 10 ? 'focused' : ''}`} onClick={handleDeleteClick}>СТЕРЕТЬ</button>
+                                <button className={`button-usual ${focusedIndex === 11 ? 'focused' : ''}`} type="button" onClick={(e) => handleNumberClick('0', e)}>0</button>
+                            </div>
                         </div>
-                        <div className="buttons-row">
-                            <button className={`button-usual ${focusedIndex === 4 ? 'focused' : ''}`} type="button" onClick={(e) => handleNumberClick('4', e)}>4</button>
-                            <button className={`button-usual ${focusedIndex === 5 ? 'focused' : ''}`} type="button" onClick={(e) => handleNumberClick('5', e)}>5</button>
-                            <button className={`button-usual ${focusedIndex === 6 ? 'focused' : ''}`} type="button" onClick={(e) => handleNumberClick('6', e)}>6</button>
-                        </div>
-                        <div className="buttons-row">
-                            <button className={`button-usual ${focusedIndex === 7 ? 'focused' : ''}`} type="button" onClick={(e) => handleNumberClick('7', e)}>7</button>
-                            <button className={`button-usual ${focusedIndex === 8 ? 'focused' : ''}`} type="button" onClick={(e) => handleNumberClick('8', e)}>8</button>
-                            <button className={`button-usual ${focusedIndex === 9 ? 'focused' : ''}`} type="button" onClick={(e) => handleNumberClick('9', e)}>9</button>
-                        </div>
-                        <div className="buttons-row">
-                            <button className={`button-usual button-double ${focusedIndex === 10 ? 'focused' : ''}`} onClick={handleDeleteClick}>Стереть</button>
-                            <button className={`button-usual ${focusedIndex === 11 ? 'focused' : ''}`} type="button" onClick={(e) => handleNumberClick('0', e)}>0</button>
-                        </div>
-                    </div>
-                    <div className="agreement-wrapper">
-                        <input type="checkbox" id="agreement-checkbox" className="agreement-checkbox" />
-                        <label htmlFor="agreement-checkbox" className="agreement-label">Согласие на обработку персональных данных</label>
-                    </div>
-                </fieldset>
-            </form>
-            <div
-                className="close-button"
-                onClick={() => {
-                    dispatch(setFormStatus(false));
-                    dispatch(setVideoStatus(true));
-                }}
-            >
-                <CloseButton />
-            </div>
+                        {showError ?
+                            <div className="error-wrapper">
+                                <p>НЕВЕРНО ВВЕДЁН НОМЕР</p>
+                            </div>
+                            :
+                            <div className="agreement-wrapper">
+                                <input type="checkbox" id="agreement-checkbox" className="agreement-checkbox" onChange={handleAgreementChange} />
+                                <label htmlFor="agreement-checkbox" className="agreement-label"></label>
+                                <p className="agreement-text">Согласие на обработку персональных данных</p>
+                            </div>
+                        }
+                        <button
+                            className='submit-button'
+                            type='button'
+                            onClick={handleSubmitClick}
+                            disabled={isSubmitDisabled || !isAgreementChecked}
+                        >
+                            ПОДТВЕРДИТЬ НОМЕР
+                        </button>
+                    </fieldset>
+                </form>
+                <div
+                    className="close-button"
+                    onClick={() => {
+                        dispatch(setFormStatus(false));
+                        dispatch(setVideoStatus(true));
+                    }}
+                >
+                    <CloseButton />
+                </div>
+            </div >
         </>
     );
 }
