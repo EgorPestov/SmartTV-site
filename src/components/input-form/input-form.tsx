@@ -4,7 +4,9 @@ import { setFormStatus, setVideoStatus, setFormShownStatus } from "../../store/b
 import { useState, ChangeEvent, MouseEvent, KeyboardEvent, useRef, useEffect } from 'react';
 import InputMask from 'react-input-mask';
 import { useKeyPress } from "../../assets/hooks/use-key-press/use-key-press";
-import { BUTTON_FOCUS_TIME, ERROR_SHOW_TIME, IDDLE_TIME, NUMBER_MASK } from "../../const";
+import { BUTTON_FOCUS_TIME, ERROR_SHOW_TIME, IDDLE_TIME, NUMBER_MASK, API_KEY, API_URL } from "../../const";
+import axios from "axios";
+import { formatPhoneNumber } from "../../utils";
 
 export const InputForm = () => {
     const dispatch = useAppDispatch();
@@ -312,16 +314,20 @@ export const InputForm = () => {
         setAgreementChecked(evt.target.checked);
     }
 
-    const handleSubmitClick = (evt: MouseEvent<HTMLButtonElement>) => {
+    const handleSubmitClick = async (evt: MouseEvent<HTMLButtonElement>) => {
         evt.preventDefault();
-        const digitCount = (numberString.match(/\d/g) || []).length;
 
-        if (digitCount !== 11) {
-            setShowError(true);
-            setTimeout(() => setShowError(false), ERROR_SHOW_TIME);
-        } else {
-            setShowError(false);
-            setFormShowing(false);
+        try {
+            const response = await axios.get(`${API_URL}?access_key=${API_KEY}&number=${formatPhoneNumber(numberString)}&country_code=RU`);
+            
+            if (response.data.valid) {
+                setFormShowing(false);
+            } else {
+                setShowError(true);
+                setTimeout(() => setShowError(false), ERROR_SHOW_TIME);
+            }
+        } catch (error) {
+            throw new Error;
         }
     };
 
@@ -340,17 +346,20 @@ export const InputForm = () => {
         }
     };
 
-    const handleSubmitEnterPress = (evt: KeyboardEvent<HTMLButtonElement>) => {
+    const handleSubmitEnterPress = async (evt: KeyboardEvent<HTMLButtonElement>) => {
         evt.preventDefault();
         if (evt.key === 'Enter') {
-            const digitCount = (numberString.match(/\d/g) || []).length;
-
-            if (digitCount !== 11) {
-                setShowError(true);
-                setTimeout(() => setShowError(false), ERROR_SHOW_TIME);
-            } else {
-                setShowError(false);
-                setFormShowing(false);
+            try {
+                const response = await axios.get(`${API_URL}?access_key=${API_KEY}&number=${formatPhoneNumber(numberString)}&country_code=RU`);
+                
+                if (response.data.valid) {
+                    setFormShowing(false);
+                } else {
+                    setShowError(true);
+                    setTimeout(() => setShowError(false), ERROR_SHOW_TIME);
+                }
+            } catch (error) {
+                throw new Error;
             }
         }
     };
