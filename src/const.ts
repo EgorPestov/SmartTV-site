@@ -8,6 +8,8 @@ export const ERROR_SHOW_TIME = 1000;
 
 export const NUMBER_MASK = '+7(___)___-__-__';
 
+export const IDDLE_TIME = 10000;
+
 export const NameSpace = {
   Banner: 'BANNER',
 } as const;

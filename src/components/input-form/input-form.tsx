@@ -4,7 +4,7 @@ import { setFormStatus, setVideoStatus } from "../../store/banner-process/banner
 import { useState, ChangeEvent, MouseEvent, KeyboardEvent, useRef, useEffect } from 'react';
 import InputMask from 'react-input-mask';
 import { useKeyPress } from "../../assets/hooks/use-key-press/use-key-press";
-import { ERROR_SHOW_TIME, NUMBER_MASK } from "../../const";
+import { ERROR_SHOW_TIME, IDDLE_TIME, NUMBER_MASK } from "../../const";
 
 export const InputForm = () => {
     const dispatch = useAppDispatch();
@@ -12,6 +12,54 @@ export const InputForm = () => {
     const agreementLabelRef = useRef<HTMLLabelElement | null>(null);
     const closeButtonRef = useRef<HTMLDivElement | null>(null);
     const submitRef = useRef<HTMLButtonElement | null>(null);
+
+    const [timerValue, setTimerValue] = useState<number | null>(null);
+    const timerRef = useRef<number | null>(null);
+
+    useEffect(() => {
+        const initialTimer = setTimeout(() => {
+            setTimerValue(10);
+        }, IDDLE_TIME);
+
+        return () => {
+            clearTimeout(initialTimer);
+        };
+    }, []);
+
+    useEffect(() => {
+        const handleUserActivity = () => {
+            if (timerRef.current) {
+                clearTimeout(timerRef.current);
+            }
+            setTimerValue(null);
+            timerRef.current = setTimeout(() => {
+                setTimerValue(10);
+            }, IDDLE_TIME);
+        };
+
+        document.addEventListener("mousemove", handleUserActivity);
+        document.addEventListener("keydown", handleUserActivity);
+        document.addEventListener("touchstart", handleUserActivity);
+
+        return () => {
+            document.removeEventListener("mousemove", handleUserActivity);
+            document.removeEventListener("keydown", handleUserActivity);
+            document.removeEventListener("touchstart", handleUserActivity);
+        };
+    }, []);
+
+    useEffect(() => {
+        if (timerValue !== null && timerValue > 0) {
+            const countdown = setInterval(() => {
+                setTimerValue((prev) => (prev !== null ? prev - 1 : null));
+            }, 1000);
+
+            return () => clearInterval(countdown);
+        } else if (timerValue === 0) {
+            dispatch(setFormStatus(false));
+            dispatch(setVideoStatus(true));
+        }
+    }, [timerValue, dispatch]);
 
     const [isFormShowing, setFormShowing] = useState(true);
     const [numberString, setNumberString] = useState(NUMBER_MASK);
@@ -402,7 +450,12 @@ export const InputForm = () => {
                 >
                     <CloseButton />
                 </div>
+                {timerValue !== null && (
+                    <div className="timer">
+                        {timerValue}
+                    </div>
+                )}
             </div >
         </>
     );
-}
+};
