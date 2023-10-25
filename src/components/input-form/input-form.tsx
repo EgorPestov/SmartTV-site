@@ -316,7 +316,6 @@ export const InputForm = () => {
 
     const handleSubmitClick = async (evt: MouseEvent<HTMLButtonElement>) => {
         evt.preventDefault();
-
         try {
             const response = await axios.get(`${API_URL}?api_key=${API_KEY}&phone=${formatPhoneNumber(numberString)}`);
             
@@ -350,7 +349,7 @@ export const InputForm = () => {
         evt.preventDefault();
         if (evt.key === 'Enter') {
             try {
-                const response = await axios.get(`${API_URL}?access_key=${API_KEY}&number=${formatPhoneNumber(numberString)}&country_code=RU`);
+                const response = await axios.get(`${API_URL}?api_key=${API_KEY}&phone=${formatPhoneNumber(numberString)}`);
                 
                 if (response.data.valid) {
                     setFormShowing(false);
