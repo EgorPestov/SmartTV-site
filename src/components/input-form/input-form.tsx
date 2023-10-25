@@ -14,7 +14,7 @@ export const InputForm = () => {
     const [focusedIndex, setFocusedIndex] = useState(0);
     const [showError, setShowError] = useState(false);
     const [isAgreementChecked, setAgreementChecked] = useState(false);
-    const [isSubmitDisabled, setSubmitDisabled] = useState(false);
+    const [isSubmitDisabled, setSubmitDisabled] = useState(true);
 
     const arrowUpPressed = useKeyPress('ArrowUp');
     const arrowDownPressed = useKeyPress('ArrowDown');
@@ -29,10 +29,10 @@ export const InputForm = () => {
 
         const digitCount = (evt.target.value.match(/\d/g) || []).length;
 
-        if (digitCount !== 11) {
-            setSubmitDisabled(true);
-        } else {
+        if (digitCount === 11) {
             setSubmitDisabled(false);
+        } else {
+            setSubmitDisabled(true);
         }
     };
 
@@ -103,10 +103,10 @@ export const InputForm = () => {
 
             const digitCount = (updatedNumberString.match(/\d/g) || []).length;
 
-            if (digitCount !== 11) {
-                setSubmitDisabled(true);
-            } else {
+            if (digitCount === 11) {
                 setSubmitDisabled(false);
+            } else {
+                setSubmitDisabled(true);
             }
         }
         setTimeout(() => {
@@ -149,13 +149,12 @@ export const InputForm = () => {
             const updatedNumberString = numberString.substring(0, lastDigitIndex) + '_' + numberString.substring(lastDigitIndex + 1);
             const digitCount = (updatedNumberString.match(/\d/g) || []).length;
 
-            if (digitCount !== 11) {
-                setSubmitDisabled(true);
-            } else {
+            if (digitCount === 11) {
                 setSubmitDisabled(false);
+            } else {
+                setSubmitDisabled(true);
             }
 
-            console.log(updatedNumberString)
             setNumberString(updatedNumberString);
         }
         setTimeout(() => {
@@ -229,7 +228,6 @@ export const InputForm = () => {
 
     const handleSubmitClick = (evt: MouseEvent<HTMLButtonElement>) => {
         evt.preventDefault();
-        console.log(numberString.length)
         const digitCount = (numberString.match(/\d/g) || []).length;
 
         if (digitCount !== 11) {
@@ -264,13 +262,13 @@ export const InputForm = () => {
                             onKeyDown={handleInputKeyDown}
                             alwaysShowMask={true}
                         >
-                            {() => <input
+                            <input
                                 type="text"
                                 className="input-form-number"
                                 ref={inputRef}
                                 onClick={() => moveCursorToEnd()}
                                 style={{ color: showError ? 'red' : 'inherit' }}
-                            />}
+                            />
                         </InputMask>
                         <p className='input-form-top-text'>и с Вами свяжется наш менеджер для дальнейшей консультации</p>
                         <div className="buttons-container">
