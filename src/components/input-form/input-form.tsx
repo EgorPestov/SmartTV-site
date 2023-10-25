@@ -11,6 +11,8 @@ export const InputForm = () => {
     const inputRef = useRef<HTMLInputElement | null>(null);
     const agreementLabelRef = useRef<HTMLLabelElement | null>(null);
     const closeButtonRef = useRef<HTMLDivElement | null>(null);
+    const submitRef = useRef<HTMLButtonElement | null>(null);
+
     const [numberString, setNumberString] = useState('+7(___)___-__-__');
     const [focusedIndex, setFocusedIndex] = useState(0);
     const [showError, setShowError] = useState(false);
@@ -166,25 +168,21 @@ export const InputForm = () => {
         }, 0);
     };
 
-    const handleInputKeyDown = (evt: KeyboardEvent<HTMLInputElement>) => {
-        if (evt.key === 'Enter') {
-            evt.preventDefault();
-        }
-    };
-
     useEffect(() => {
         const maxIndex = 15;
+        const lastDownIndex = (isSubmitDisabled || !isAgreementChecked) ? 13 : 14;
+
         if (arrowUpPressed) {
             if (focusedIndex === 1) {
-                setFocusedIndex(14);
+                setFocusedIndex(lastDownIndex);
             } else if (focusedIndex === 3) {
-                setFocusedIndex(14);
+                setFocusedIndex(lastDownIndex);
             } else if (focusedIndex === 11) {
                 setFocusedIndex(9);
             } else if (focusedIndex === 14) {
                 setFocusedIndex(13);
             } else if (focusedIndex === 15) {
-                setFocusedIndex(14);
+                setFocusedIndex(lastDownIndex);
             } else (setFocusedIndex((prevIndex) => (prevIndex - 3 + maxIndex) % maxIndex));
         }
         if (arrowDownPressed) {
@@ -199,7 +197,7 @@ export const InputForm = () => {
             } else if (focusedIndex === 10) {
                 setFocusedIndex(13);
             } else if (focusedIndex === 13) {
-                setFocusedIndex(14);
+                setFocusedIndex((isSubmitDisabled || !isAgreementChecked) ? 1 : 14);
             } else if (focusedIndex === 14) {
                 setFocusedIndex(1);
             } else if (focusedIndex === 15) {
@@ -211,6 +209,8 @@ export const InputForm = () => {
                 setFocusedIndex(15);
             } else if (focusedIndex === 13) {
                 setFocusedIndex(12);
+            } else if (focusedIndex === 15) {
+                setFocusedIndex(lastDownIndex);
             } else setFocusedIndex((prevIndex) => (prevIndex - 1 + maxIndex) % maxIndex);
         }
         if (arrowRightPressed) {
@@ -240,7 +240,9 @@ export const InputForm = () => {
             agreementLabelRef.current.focus();
         } else if (focusedIndex === 15 && closeButtonRef.current) {
             closeButtonRef.current.focus();
-        }
+        } else if (focusedIndex === 14 && submitRef.current) {
+            submitRef.current.focus();
+        } 
     }, [focusedIndex]);
 
     const handleAgreementChange = (evt: ChangeEvent<HTMLInputElement>) => {
@@ -269,6 +271,21 @@ export const InputForm = () => {
         }
     };
 
+    const handleSubmitEnterPress = (evt: KeyboardEvent<HTMLButtonElement>) => {
+        evt.preventDefault();
+        if (evt.key === 'Enter') {
+            const digitCount = (numberString.match(/\d/g) || []).length;
+
+            if (digitCount !== 11) {
+                setShowError(true);
+                setTimeout(() => setShowError(false), ERROR_SHOW_TIME);
+            } else {
+                // здесь переход на 3 экран
+                setShowError(false);
+            }
+        }
+    };
+
     const handleCloseButtonEnterPress = (evt: KeyboardEvent<HTMLDivElement>) => {
         evt.preventDefault();
         if (evt.key === 'Enter') {
@@ -288,7 +305,6 @@ export const InputForm = () => {
                             maskChar="_"
                             value={numberString}
                             onChange={handleNumberChange}
-                            onKeyDown={handleInputKeyDown}
                             alwaysShowMask={true}
                         >
                             <input
@@ -327,7 +343,13 @@ export const InputForm = () => {
                             </div>
                             :
                             <div className="agreement-wrapper">
-                                <input type="checkbox" id="agreement-checkbox" className="agreement-checkbox" onChange={handleAgreementChange} checked={isAgreementChecked} />
+                                <input
+                                    type="checkbox"
+                                    id="agreement-checkbox"
+                                    className="agreement-checkbox"
+                                    onChange={handleAgreementChange}
+                                    checked={isAgreementChecked}
+                                />
                                 <label
                                     ref={agreementLabelRef}
                                     tabIndex={0}
@@ -342,7 +364,9 @@ export const InputForm = () => {
                             className={`submit-button ${focusedIndex === 14 ? 'focused' : ''}`}
                             type='submit'
                             onClick={handleSubmitClick}
+                            onKeyDown={handleSubmitEnterPress}
                             disabled={isSubmitDisabled || !isAgreementChecked}
+                            ref={submitRef}
                         >
                             ПОДТВЕРДИТЬ НОМЕР
                         </button>
