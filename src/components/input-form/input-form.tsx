@@ -10,6 +10,7 @@ export const InputForm = () => {
     const dispatch = useAppDispatch();
     const inputRef = useRef<HTMLInputElement | null>(null);
     const agreementLabelRef = useRef<HTMLLabelElement | null>(null);
+    const closeButtonRef = useRef<HTMLDivElement | null>(null);
     const [numberString, setNumberString] = useState('+7(___)___-__-__');
     const [focusedIndex, setFocusedIndex] = useState(0);
     const [showError, setShowError] = useState(false);
@@ -172,14 +173,18 @@ export const InputForm = () => {
     };
 
     useEffect(() => {
-        const maxIndex = 13;
+        const maxIndex = 15;
         if (arrowUpPressed) {
-            if (focusedIndex === 2) {
-                setFocusedIndex(10);
+            if (focusedIndex === 1) {
+                setFocusedIndex(14);
             } else if (focusedIndex === 3) {
-                setFocusedIndex(11);
+                setFocusedIndex(14);
             } else if (focusedIndex === 11) {
                 setFocusedIndex(9);
+            } else if (focusedIndex === 14) {
+                setFocusedIndex(13);
+            } else if (focusedIndex === 15) {
+                setFocusedIndex(14);
             } else (setFocusedIndex((prevIndex) => (prevIndex - 3 + maxIndex) % maxIndex));
         }
         if (arrowDownPressed) {
@@ -193,21 +198,35 @@ export const InputForm = () => {
                 setFocusedIndex(1);
             } else if (focusedIndex === 10) {
                 setFocusedIndex(13);
+            } else if (focusedIndex === 13) {
+                setFocusedIndex(14);
+            } else if (focusedIndex === 14) {
+                setFocusedIndex(1);
+            } else if (focusedIndex === 15) {
+                setFocusedIndex(1);
             } else (setFocusedIndex((prevIndex) => (prevIndex + 3) % maxIndex));
         }
         if (arrowLeftPressed) {
             if (focusedIndex === 1) {
-                setFocusedIndex(12);
+                setFocusedIndex(15);
             } else if (focusedIndex === 13) {
                 setFocusedIndex(12);
-            }
-            setFocusedIndex((prevIndex) => (prevIndex - 1 + maxIndex) % maxIndex);
+            } else setFocusedIndex((prevIndex) => (prevIndex - 1 + maxIndex) % maxIndex);
         }
         if (arrowRightPressed) {
-            if (focusedIndex === 11) {
-                setFocusedIndex(0);
-            }
-            setFocusedIndex((prevIndex) => (prevIndex + 1) % maxIndex);
+            if (focusedIndex === 13) {
+                setFocusedIndex(15);
+            } else if (focusedIndex === 14) {
+                setFocusedIndex(15);
+            } else if (focusedIndex === 3) {
+                setFocusedIndex(15);
+            } else if (focusedIndex === 6) {
+                setFocusedIndex(15);
+            } else if (focusedIndex === 9) {
+                setFocusedIndex(15);
+            } else if (focusedIndex === 11) {
+                setFocusedIndex(15);
+            } else setFocusedIndex((prevIndex) => (prevIndex + 1) % maxIndex);
         }
 
         const focusedElement = document.querySelector('.focused');
@@ -219,6 +238,8 @@ export const InputForm = () => {
     useEffect(() => {
         if (focusedIndex === 13 && agreementLabelRef.current) {
             agreementLabelRef.current.focus();
+        } else if (focusedIndex === 15 && closeButtonRef.current) {
+            closeButtonRef.current.focus();
         }
     }, [focusedIndex]);
 
@@ -245,6 +266,14 @@ export const InputForm = () => {
         if (evt.key === 'Enter') {
             setAgreementChecked(prevChecked => !prevChecked);
             setTimeout(() => checkboxElement.focus(), 0);
+        }
+    };
+
+    const handleCloseButtonEnterPress = (evt: KeyboardEvent<HTMLDivElement>) => {
+        evt.preventDefault();
+        if (evt.key === 'Enter') {
+            dispatch(setFormStatus(false));
+            dispatch(setVideoStatus(true));
         }
     };
 
@@ -310,7 +339,7 @@ export const InputForm = () => {
                             </div>
                         }
                         <button
-                            className='submit-button'
+                            className={`submit-button ${focusedIndex === 14 ? 'focused' : ''}`}
                             type='submit'
                             onClick={handleSubmitClick}
                             disabled={isSubmitDisabled || !isAgreementChecked}
@@ -320,11 +349,14 @@ export const InputForm = () => {
                     </fieldset>
                 </form>
                 <div
-                    className="close-button"
+                    className={`close-button ${focusedIndex === 15 ? 'close-focused' : ''}`}
                     onClick={() => {
                         dispatch(setFormStatus(false));
                         dispatch(setVideoStatus(true));
                     }}
+                    onKeyDown={handleCloseButtonEnterPress}
+                    tabIndex={0}
+                    ref={closeButtonRef}
                 >
                     <CloseButton />
                 </div>
