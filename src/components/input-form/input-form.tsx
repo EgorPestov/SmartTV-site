@@ -3,7 +3,7 @@ import { useAppDispatch } from "../../hooks/use-app-dispatch/use-app-dispatch";
 import { setFormStatus, setVideoStatus, setFormShownStatus } from "../../store/banner-process/banner-process";
 import { useState, ChangeEvent, MouseEvent, KeyboardEvent, useRef, useEffect } from "react";
 import InputMask from "react-input-mask";
-import { useKeyPress } from "../../assets/hooks/use-key-press/use-key-press";
+import { useKeyPress } from "../../hooks/use-key-press/use-key-press";
 import { BUTTON_FOCUS_TIME, ERROR_SHOW_TIME, IDDLE_TIME, NUMBER_MASK, API_KEY, API_URL } from "../../const";
 import axios from "axios";
 import { formatPhoneNumber } from "../../utils";
@@ -61,7 +61,7 @@ export const InputForm = () => {
         if (!isFormShowing && closeButtonRef.current) {
             closeButtonRef.current.focus();
         }
-        
+
         if (!isFormShowing) {
             const initialTimer = setTimeout(() => {
                 setTimerValue(10);
@@ -98,6 +98,14 @@ export const InputForm = () => {
     useEffect(() => {
         const maxIndex = 15;
         const lastDownIndex = (isSubmitDisabled || !isAgreementChecked) ? 13 : 14;
+
+        if (focusedIndex === 13 && agreementLabelRef.current) {
+            agreementLabelRef.current.focus();
+        } else if (focusedIndex === 15 && closeButtonRef.current) {
+            closeButtonRef.current.focus();
+        } else if (focusedIndex === 14 && submitRef.current) {
+            submitRef.current.focus();
+        }
 
         if (arrowUpPressed) {
             if (focusedIndex === 1) {
@@ -161,16 +169,6 @@ export const InputForm = () => {
             (focusedElement as HTMLElement).focus();
         }
     }, [arrowUpPressed, arrowDownPressed, arrowLeftPressed, arrowRightPressed]);
-
-    useEffect(() => {
-        if (focusedIndex === 13 && agreementLabelRef.current) {
-            agreementLabelRef.current.focus();
-        } else if (focusedIndex === 15 && closeButtonRef.current) {
-            closeButtonRef.current.focus();
-        } else if (focusedIndex === 14 && submitRef.current) {
-            submitRef.current.focus();
-        }
-    }, [focusedIndex]);
 
     const handleNumberChange = (evt: ChangeEvent<HTMLInputElement>) => {
         setNumberString(evt.target.value);
@@ -310,7 +308,7 @@ export const InputForm = () => {
 
     const handleAgreementChange = (evt: ChangeEvent<HTMLInputElement>) => {
         setAgreementChecked(evt.target.checked);
-    }
+    };
 
     const handleSubmitClick = async (evt: MouseEvent<HTMLButtonElement>) => {
         evt.preventDefault();
