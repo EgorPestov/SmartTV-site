@@ -1,8 +1,8 @@
 import { CloseButton } from "../close-button/close-button";
 import { useAppDispatch } from "../../hooks/use-app-dispatch/use-app-dispatch";
 import { setFormStatus, setVideoStatus, setFormShownStatus } from "../../store/banner-process/banner-process";
-import { useState, ChangeEvent, MouseEvent, KeyboardEvent, useRef, useEffect } from 'react';
-import InputMask from 'react-input-mask';
+import { useState, ChangeEvent, MouseEvent, KeyboardEvent, useRef, useEffect } from "react";
+import InputMask from "react-input-mask";
 import { useKeyPress } from "../../assets/hooks/use-key-press/use-key-press";
 import { BUTTON_FOCUS_TIME, ERROR_SHOW_TIME, IDDLE_TIME, NUMBER_MASK, API_KEY, API_URL } from "../../const";
 import axios from "axios";
@@ -10,14 +10,14 @@ import { formatPhoneNumber } from "../../utils";
 
 export const InputForm = () => {
     const dispatch = useAppDispatch();
+
     const inputRef = useRef<HTMLInputElement | null>(null);
     const agreementLabelRef = useRef<HTMLLabelElement | null>(null);
     const closeButtonRef = useRef<HTMLDivElement | null>(null);
     const submitRef = useRef<HTMLButtonElement | null>(null);
-
-    const [timerValue, setTimerValue] = useState<number | null>(null);
     const timerRef = useRef<number | null>(null);
 
+    const [timerValue, setTimerValue] = useState<number | null>(null);
     const [isFormShowing, setFormShowing] = useState(true);
     const [numberString, setNumberString] = useState(NUMBER_MASK);
     const [focusedIndex, setFocusedIndex] = useState(0);
@@ -35,25 +35,6 @@ export const InputForm = () => {
             setTimerValue(10);
         }, 0);
 
-        return () => {
-            clearTimeout(initialTimer);
-        };
-    }, []);
-
-    useEffect(() => {
-        if (!isFormShowing) {
-            const initialTimer = setTimeout(() => {
-                setTimerValue(10);
-            }, 0);
-
-
-            return () => {
-                clearTimeout(initialTimer);
-            };
-        }
-    }, [isFormShowing]);
-
-    useEffect(() => {
         const handleUserActivity = () => {
             if (timerRef.current) {
                 clearTimeout(timerRef.current);
@@ -69,11 +50,28 @@ export const InputForm = () => {
         document.addEventListener("touchstart", handleUserActivity);
 
         return () => {
+            clearTimeout(initialTimer);
             document.removeEventListener("mousemove", handleUserActivity);
             document.removeEventListener("keydown", handleUserActivity);
             document.removeEventListener("touchstart", handleUserActivity);
         };
     }, []);
+
+    useEffect(() => {
+        if (!isFormShowing && closeButtonRef.current) {
+            closeButtonRef.current.focus();
+        }
+        
+        if (!isFormShowing) {
+            const initialTimer = setTimeout(() => {
+                setTimerValue(10);
+            }, 0);
+
+            return () => {
+                clearTimeout(initialTimer);
+            };
+        }
+    }, [isFormShowing]);
 
     useEffect(() => {
         if (timerValue !== null && timerValue > 0) {
@@ -88,6 +86,91 @@ export const InputForm = () => {
             dispatch(setFormShownStatus(true));
         }
     }, [timerValue, dispatch]);
+
+    useEffect(() => {
+        document.addEventListener('keydown', handleDocumentKeyDown);
+
+        return () => {
+            document.removeEventListener('keydown', handleDocumentKeyDown);
+        };
+    }, [numberString]);
+
+    useEffect(() => {
+        const maxIndex = 15;
+        const lastDownIndex = (isSubmitDisabled || !isAgreementChecked) ? 13 : 14;
+
+        if (arrowUpPressed) {
+            if (focusedIndex === 1) {
+                setFocusedIndex(lastDownIndex);
+            } else if (focusedIndex === 3) {
+                setFocusedIndex(lastDownIndex);
+            } else if (focusedIndex === 11) {
+                setFocusedIndex(9);
+            } else if (focusedIndex === 14) {
+                setFocusedIndex(13);
+            } else if (focusedIndex === 15) {
+                setFocusedIndex(lastDownIndex);
+            } else (setFocusedIndex((prevIndex) => (prevIndex - 3 + maxIndex) % maxIndex));
+        }
+        if (arrowDownPressed) {
+            if (focusedIndex === 8) {
+                setFocusedIndex(10);
+            } else if (focusedIndex === 9) {
+                setFocusedIndex(11);
+            } else if (focusedIndex === 11) {
+                setFocusedIndex(13);
+            } else if (focusedIndex === 0) {
+                setFocusedIndex(1);
+            } else if (focusedIndex === 10) {
+                setFocusedIndex(13);
+            } else if (focusedIndex === 13) {
+                setFocusedIndex((isSubmitDisabled || !isAgreementChecked) ? 1 : 14);
+            } else if (focusedIndex === 14) {
+                setFocusedIndex(1);
+            } else if (focusedIndex === 15) {
+                setFocusedIndex(1);
+            } else (setFocusedIndex((prevIndex) => (prevIndex + 3) % maxIndex));
+        }
+        if (arrowLeftPressed) {
+            if (focusedIndex === 1) {
+                setFocusedIndex(15);
+            } else if (focusedIndex === 13) {
+                setFocusedIndex(12);
+            } else if (focusedIndex === 15) {
+                setFocusedIndex(lastDownIndex);
+            } else setFocusedIndex((prevIndex) => (prevIndex - 1 + maxIndex) % maxIndex);
+        }
+        if (arrowRightPressed) {
+            if (focusedIndex === 13) {
+                setFocusedIndex(15);
+            } else if (focusedIndex === 14) {
+                setFocusedIndex(15);
+            } else if (focusedIndex === 3) {
+                setFocusedIndex(15);
+            } else if (focusedIndex === 6) {
+                setFocusedIndex(15);
+            } else if (focusedIndex === 9) {
+                setFocusedIndex(15);
+            } else if (focusedIndex === 11) {
+                setFocusedIndex(15);
+            } else setFocusedIndex((prevIndex) => (prevIndex + 1) % maxIndex);
+        }
+
+        const focusedElement = document.querySelector('.focused');
+        if (focusedElement) {
+            (focusedElement as HTMLElement).focus();
+        }
+    }, [arrowUpPressed, arrowDownPressed, arrowLeftPressed, arrowRightPressed]);
+
+    useEffect(() => {
+        if (focusedIndex === 13 && agreementLabelRef.current) {
+            agreementLabelRef.current.focus();
+        } else if (focusedIndex === 15 && closeButtonRef.current) {
+            closeButtonRef.current.focus();
+        } else if (focusedIndex === 14 && submitRef.current) {
+            submitRef.current.focus();
+        }
+    }, [focusedIndex]);
 
     const handleNumberChange = (evt: ChangeEvent<HTMLInputElement>) => {
         setNumberString(evt.target.value);
@@ -196,14 +279,6 @@ export const InputForm = () => {
         }
     };
 
-    useEffect(() => {
-        document.addEventListener('keydown', handleDocumentKeyDown);
-
-        return () => {
-            document.removeEventListener('keydown', handleDocumentKeyDown);
-        };
-    }, [numberString]);
-
     const handleDeleteClick = (evt: MouseEvent<HTMLButtonElement>) => {
         evt.preventDefault();
         handleClick(evt);
@@ -233,83 +308,6 @@ export const InputForm = () => {
         }, 0);
     };
 
-    useEffect(() => {
-        const maxIndex = 15;
-        const lastDownIndex = (isSubmitDisabled || !isAgreementChecked) ? 13 : 14;
-
-        if (arrowUpPressed) {
-            if (focusedIndex === 1) {
-                setFocusedIndex(lastDownIndex);
-            } else if (focusedIndex === 3) {
-                setFocusedIndex(lastDownIndex);
-            } else if (focusedIndex === 11) {
-                setFocusedIndex(9);
-            } else if (focusedIndex === 14) {
-                setFocusedIndex(13);
-            } else if (focusedIndex === 15) {
-                setFocusedIndex(lastDownIndex);
-            } else (setFocusedIndex((prevIndex) => (prevIndex - 3 + maxIndex) % maxIndex));
-        }
-        if (arrowDownPressed) {
-            if (focusedIndex === 8) {
-                setFocusedIndex(10);
-            } else if (focusedIndex === 9) {
-                setFocusedIndex(11);
-            } else if (focusedIndex === 11) {
-                setFocusedIndex(13);
-            } else if (focusedIndex === 0) {
-                setFocusedIndex(1);
-            } else if (focusedIndex === 10) {
-                setFocusedIndex(13);
-            } else if (focusedIndex === 13) {
-                setFocusedIndex((isSubmitDisabled || !isAgreementChecked) ? 1 : 14);
-            } else if (focusedIndex === 14) {
-                setFocusedIndex(1);
-            } else if (focusedIndex === 15) {
-                setFocusedIndex(1);
-            } else (setFocusedIndex((prevIndex) => (prevIndex + 3) % maxIndex));
-        }
-        if (arrowLeftPressed) {
-            if (focusedIndex === 1) {
-                setFocusedIndex(15);
-            } else if (focusedIndex === 13) {
-                setFocusedIndex(12);
-            } else if (focusedIndex === 15) {
-                setFocusedIndex(lastDownIndex);
-            } else setFocusedIndex((prevIndex) => (prevIndex - 1 + maxIndex) % maxIndex);
-        }
-        if (arrowRightPressed) {
-            if (focusedIndex === 13) {
-                setFocusedIndex(15);
-            } else if (focusedIndex === 14) {
-                setFocusedIndex(15);
-            } else if (focusedIndex === 3) {
-                setFocusedIndex(15);
-            } else if (focusedIndex === 6) {
-                setFocusedIndex(15);
-            } else if (focusedIndex === 9) {
-                setFocusedIndex(15);
-            } else if (focusedIndex === 11) {
-                setFocusedIndex(15);
-            } else setFocusedIndex((prevIndex) => (prevIndex + 1) % maxIndex);
-        }
-
-        const focusedElement = document.querySelector('.focused');
-        if (focusedElement) {
-            (focusedElement as HTMLElement).focus();
-        }
-    }, [arrowUpPressed, arrowDownPressed, arrowLeftPressed, arrowRightPressed]);
-
-    useEffect(() => {
-        if (focusedIndex === 13 && agreementLabelRef.current) {
-            agreementLabelRef.current.focus();
-        } else if (focusedIndex === 15 && closeButtonRef.current) {
-            closeButtonRef.current.focus();
-        } else if (focusedIndex === 14 && submitRef.current) {
-            submitRef.current.focus();
-        }
-    }, [focusedIndex]);
-
     const handleAgreementChange = (evt: ChangeEvent<HTMLInputElement>) => {
         setAgreementChecked(evt.target.checked);
     }
@@ -318,7 +316,7 @@ export const InputForm = () => {
         evt.preventDefault();
         try {
             const response = await axios.get(`${API_URL}?api_key=${API_KEY}&phone=${formatPhoneNumber(numberString)}`);
-            
+
             if (response.data.valid) {
                 setFormShowing(false);
             } else {
@@ -329,12 +327,6 @@ export const InputForm = () => {
             throw new Error;
         }
     };
-
-    useEffect(() => {
-        if (!isFormShowing && closeButtonRef.current) {
-            closeButtonRef.current.focus();
-        }
-    }, [isFormShowing]);
 
     const handleCheckboxEnterPress = (evt: KeyboardEvent<HTMLLabelElement>) => {
         evt.preventDefault();
@@ -350,7 +342,7 @@ export const InputForm = () => {
         if (evt.key === 'Enter') {
             try {
                 const response = await axios.get(`${API_URL}?api_key=${API_KEY}&phone=${formatPhoneNumber(numberString)}`);
-                
+
                 if (response.data.valid) {
                     setFormShowing(false);
                 } else {
