@@ -64,7 +64,7 @@ export const InputForm = () => {
 
         if (!isFormShowing) {
             const initialTimer = setTimeout(() => {
-                setTimerValue(10);
+                setTimerValue(5);
             }, 0);
 
             return () => {
